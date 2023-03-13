@@ -20,7 +20,7 @@
      * Register WP Hooks
      */
     public function register_wp_hooks() {
-
+        
         // Register Admin Menu
         add_action( 
             'admin_menu', 
@@ -54,8 +54,14 @@
         // Pre Update Option Filter for Settings To Catch and configure "Run" Task
         add_filter( 
             "pre_update_option_{$this->settings_key}", 
-            array( $this, 'pre_update_option_run_task_listener' )
+            array( $this, 'pre_update_option_run_task_listener' ),
+            10,
+            3
         );
+
+        if( isset( $_GET['test'] ) ){
+            ckld_group_enroll()->enrole_wp_users_to_learndash_group( [941,942,943], 45 );
+        }
     
     }
 
@@ -84,7 +90,7 @@
 
         wp_enqueue_script( 'ck-ld-group-enroll-admin' );
         echo "<div id=\"ck-ld-group-enroll-admin\"></div>";
-        
+
     }
 
     /**
@@ -188,7 +194,7 @@
      * 
      * @param mixed  $value     The new, unserialized option value.
      */
-    public function pre_update_option_run_task_listener( $value ) {
+    public function pre_update_option_run_task_listener( $value, $old_value, $option ) {
         
         if ( is_array( $value ) ) {
 
@@ -196,12 +202,18 @@
 
                 // Catch Run Status and add Update Option Action Hook
                 if ( $value['status'] === 'run' ) {
+                    $this->logger( __CLASS__, __FUNCTION__, 'Entering. Run..' );
                     $controller = $this->group_enrollment_controller( $value );
                     $value      = $controller->validate_dispatch();
                     if ( $value['status'] === 'processing' ) {
-                        // Add the dispatch listener if status is processing
-                        add_action(
+                        add_action( 
                             "update_option_{$this->settings_key}", 
+                            array( $this, 'updated_option_dispatch_task_listener' ), 
+                            10, 
+                            2
+                        );
+                        add_action( 
+                            "add_option_{$this->settings_key}", 
                             array( $this, 'updated_option_dispatch_task_listener' ), 
                             10, 
                             2
@@ -221,21 +233,25 @@
      * Added by pre_update_option_run_task_listener() when status is set to "run"
      * and it is validated to dispatch the task removes itself after it is called
      * 
-     * @param mixed  $old_value   The old, unserialized option value.
-     * @param mixed  $value       The new, unserialized option value.
+     * @param mixed  $option   Option name when called from add_option, old option value when called from update_option. 
+     * @param mixed  $value    The new, unserialized option value.
      */
-    public function updated_option_dispatch_task_listener( $old_value, $value ){
-
+    public function updated_option_dispatch_task_listener( $option, $value ){
+        
         if ( is_array( $value ) ) {
 
             if ( ! empty($value['status']) ) {
 
                 // Catch Process Status and Dispatch Valid Task
                 if ( $value['status'] === 'processing' ) {
-                    $this->logger( __CLASS__, __FUNCTION__, 'Dispatching From Updated Option...' );
-                    // Remove the dispatch listener
+                    // Remove the dispatch listeners
                     remove_action(
                         "update_option_{$this->settings_key}", 
+                        array( $this, 'updated_option_dispatch_task_listener' ), 
+                        10
+                    );
+                    remove_action(
+                        "add_option_{$this->settings_key}", 
                         array( $this, 'updated_option_dispatch_task_listener' ), 
                         10
                     );
@@ -374,17 +390,17 @@
 
                 // If the user_id was not in the process queue
                 if ( is_wp_error( $result ) ) {
-                    $option_data = $result->get_error_data();
+                    $task_data = $result->get_error_data();
                 } else {
-                    $option_data = $result;
+                    $task_data = $result;
                 }
                 
                 // Update the option
-                update_option( $this->settings_key, $option_data );
+                update_option( $this->settings_key, $task_data );
 
-                $this->logger( __CLASS__, __FUNCTION__, $option_data );
+                $this->logger( __CLASS__, __FUNCTION__, $task_data );
                 
-            } while ( $option_data['status'] === 'processing' );
+            } while ( $task_data['status'] === 'processing' );
 
             // Update the option
             update_option( $this->settings_key, $task_data );

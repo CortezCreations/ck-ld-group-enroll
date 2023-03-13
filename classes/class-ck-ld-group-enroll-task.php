@@ -163,9 +163,11 @@ class CK_LD_Group_Enroll_Task {
             }
 
             return $courses;
+
         } else {
             
             return false;
+
         }
 
     }

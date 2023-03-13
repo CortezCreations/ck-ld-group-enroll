@@ -45,6 +45,7 @@ class CK_LD_Group_Enroll_Controller {
      */
     private $admin_email = '';
 
+
     /**
      * Constructor
      * 
@@ -75,7 +76,7 @@ class CK_LD_Group_Enroll_Controller {
      * @return mixed - WP_Error with completed Task data || Validated Task Data ready to process
      */
     public function validate_dispatch() {
-        
+
         // Errors Found - Update Messaging and Set Status to Completed
         if ( is_wp_error( $this->error ) ) {
 
@@ -132,6 +133,7 @@ class CK_LD_Group_Enroll_Controller {
             return $this->data;
         
         } else {
+
             // Really shouldn't happen so complete task and return error
             $this->set_completed_task_data();
             return new WP_Error(
@@ -172,7 +174,7 @@ class CK_LD_Group_Enroll_Controller {
             }
         }
         $data = $paresd;
-        
+
         // Error Handling
         $error = new WP_Error();
         
