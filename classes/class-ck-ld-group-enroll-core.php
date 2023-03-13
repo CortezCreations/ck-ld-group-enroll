@@ -7,7 +7,8 @@
  * @subpackage ck-ld-group-enroll/classes
  * @author     Curtis Krauter <cortezcreations@gmail.com>
  */
-class CK_LD_Group_Enroll_Core {
+
+ class CK_LD_Group_Enroll_Core {
 
     /**
      * @var string - $settings_key
@@ -253,57 +254,57 @@ class CK_LD_Group_Enroll_Core {
     private function dispatch_async_task() {
         
         $args = array(
-			'action' => $this->settings_key,
-			'nonce'  => wp_create_nonce( $this->settings_key ),
-		);
-		$url  = add_query_arg( $args, admin_url( 'admin-ajax.php' ) );
-		$args = array(
-			'timeout'   => 0.01,
-			'blocking'  => false,
-			'cookies'   => $_COOKIE,
-			'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
-		);
-
+            'action' => $this->settings_key,
+            'nonce'  => wp_create_nonce( $this->settings_key ),
+        );
+        $url  = add_query_arg( $args, admin_url( 'admin-ajax.php' ) );
+        $args = array(
+            'timeout'   => 0.01,
+            'blocking'  => false,
+            'cookies'   => $_COOKIE,
+            'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+        );
+        
         $this->logger( __CLASS__, __FUNCTION__, 'Dispatching AJAX...' );
-
-		return wp_remote_post( esc_url_raw( $url ), $args );
-	}
-
+        
+        return wp_remote_post( esc_url_raw( $url ), $args );
+    }
+    
     /**
      * Handle Async Queue Request to Mark User Group Assignments 
      * and Course Progress Completion
      */
     public function handle_async_task_queue() {
-
+        
         // Don't lock up other requests while processing
-		session_write_close();
-
-		check_ajax_referer( $this->settings_key, 'nonce' );
-
+        session_write_close();
+        
+        check_ajax_referer( $this->settings_key, 'nonce' );
+        
         // Get the data from our option
         $option_data = get_option( $this->settings_key, $this->get_settings_schema( 'defaults' ) );
-
+        
         // Initialize the controller and validate the data
         $controller = $this->group_enrollment_controller( $option_data );
         $task_data  = $controller->validate_dispatch();
-
+        
         $this->logger( __CLASS__, __FUNCTION__, $task_data );
-
+        
         // Bail if we have an error
         if ( is_wp_error( $task_data ) ) {
-
+            
             $option_data = $task_data->get_error_data();
             update_option( $this->settings_key, $option_data );
-
+            
             wp_die();
-
+        
         } else {
-
+            
             // Get the first user in the array
             $users   = $task_data['user_ids'];
             $user_id = (int) $users[0];
             $result  = $controller->enroll_user( $user_id );
-
+            
             // If the user_id was not in the process queue
             if ( is_wp_error( $result ) ) {
                 $option_data = $result->get_error_data();
@@ -313,7 +314,7 @@ class CK_LD_Group_Enroll_Core {
             
             // Update the option
             update_option( $this->settings_key, $option_data );
-
+            
             $this->logger( __CLASS__, __FUNCTION__, $option_data );
             
             // Run again if still processing
@@ -322,9 +323,8 @@ class CK_LD_Group_Enroll_Core {
             }
             
             wp_die();
-        
         }
-
+    
     }
 
     /**

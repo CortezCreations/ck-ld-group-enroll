@@ -122,8 +122,8 @@ class CK_LD_Group_Enroll_Controller {
             $user_count     = count( $this->user_ids );
             
             // Update Properties
-            $this->data['user_ids']  = $this->user_ids;
-            $this->data['status']    = $user_count > 0 ? 'processing' : 'completed';
+            $this->data['user_ids'] = $this->user_ids;
+            $this->data['status']   = $user_count > 0 ? 'processing' : 'completed';
             
             if( $this->data['status'] === 'completed' ){
                 $this->set_completed_task_data();
