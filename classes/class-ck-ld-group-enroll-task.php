@@ -195,7 +195,7 @@ class CK_LD_Group_Enroll_Task {
              $quiz_updated = false;
              if( ! empty($course['quizzes']) ){
                 $quiz_usermeta = get_user_meta( $this->user_id, '_sfwd-quizzes', true );
-				$quiz_usermeta = empty( $quiz_usermeta ) ? array() : $quiz_usermeta;
+                $quiz_usermeta = empty( $quiz_usermeta ) ? array() : $quiz_usermeta;
                 foreach( $course['quizzes'] as $quiz_id ){
                     if( ! learndash_is_quiz_complete( $this->user_id, $quiz_id, $course_id )){
                        $quiz_data = $this->mark_quiz_complete( $quiz_id, $course_id );
