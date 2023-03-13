@@ -20,8 +20,8 @@ if ( ! function_exists('ckld_group_enroll') ) {
     define('CK_LD_GROUP_HOME', __FILE__);
     define('CK_LD_GROUP_HOME_DIR', __DIR__ . DIRECTORY_SEPARATOR);
     
-    define('CK_LD_GROUP_DEBUG', true);
-    define('CK_LD_GROUP_DEBUG_LOG', CK_LD_GROUP_HOME_DIR . 'ckld_group_enroll_debug.log');
+    //define('CK_LD_GROUP_DEBUG', true);
+    //define('CK_LD_GROUP_DEBUG_LOG', CK_LD_GROUP_HOME_DIR . 'ckld_group_enroll_debug.log');
 
     function ckld_group_enroll() {
         static $instance = null;
