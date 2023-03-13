@@ -62,7 +62,7 @@
             "pre_update_option_{$this->settings_key}", 
             array( $this, 'pre_update_option_run_task_listener' ),
             10,
-            3
+            1
         );
     
     }
@@ -89,7 +89,7 @@
      * @param array $links
      * @return array
      */
-    function plugin_settting_link( $links ) {
+    public function plugin_settting_link( $links ) {
         $links['settings'] = sprintf(
             '<a href="%s"> %s </a>', 
             admin_url("admin.php?page=ck-ld-group-enroll-admin"),
@@ -210,7 +210,7 @@
      * 
      * @param mixed  $value     The new, unserialized option value.
      */
-    public function pre_update_option_run_task_listener( $value, $old_value, $option ) {
+    public function pre_update_option_run_task_listener( $value ) {
         
         if ( is_array( $value ) ) {
 
