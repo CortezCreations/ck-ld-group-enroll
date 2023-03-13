@@ -47,7 +47,7 @@ if ( ! function_exists('ckld_group_enroll') ) {
         }
 
         // PHP Version
-        if ( version_compare(phpversion(), '7.0', '<') ) {
+        if ( version_compare( phpversion(), '7.0', '<' ) ) {
             add_action( 'admin_notices', 'ckld_group_php_admin_notice' );
             function ckld_group_php_admin_notice() {
                 $message = __( 'CK LearnDash Group Enrollment requires PHP 7.0 or greater.', 'ck-ld-group-enroll' );
