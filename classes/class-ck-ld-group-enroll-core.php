@@ -26,6 +26,12 @@
             'admin_menu', 
             array( $this, 'admin_menu' )
         );
+
+        // Add Link To Admin Page
+        add_filter(
+            "plugin_action_links_ck-ld-group-enroll/ck-ld-group-enroll.php",
+            array( $this, 'plugin_settting_link' )
+        );
         
         // Register Admin Assets
         add_action( 
@@ -75,6 +81,20 @@
             'dashicons-groups',
         );
 
+    }
+    
+    /**
+     * Plugin Page - Settings Link
+     * 
+     * @param array $links
+     * @return array
+     */
+    function plugin_settting_link( $links ) {
+        $links['settings'] = sprintf(
+            '<a href="%s"> %s </a>', 
+            admin_url("admin.php?page=ck-ld-group-enroll-admin"),
+            __('Settings', 'ck-ld-group-enroll') );
+        return $links;
     }
 
     /**
