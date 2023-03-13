@@ -1,24 +1,24 @@
 <?php
 /**
- * Core Plugin Class - Registers WP Hooks
+ * Core Plugin Class
  *
- * @file
- * Registers WP Hooks and Filters
+ * Registers WP Hooks Displays Admin and Handles Group Enrollment Processing.
  *
- * @category   Plugins
- * @package    WordPress
- * @subpackage ck-ld-group-enroll/classes
- * @author     Curtis Krauter <cortezcreations@gmail.com>
- * @license    https://www.gnu.org/licenses/gpl-3.0.txt GNU/GPLv3
- * @link       https://cortezcreations.org
- * @since      1.0.0
+ * @package CK_LD_Group_Enroll
+ * @subpackage CK_LD_Group_Enroll_Core
+ * @since 1.0.0
+ */
+
+/**
+ * Ck LearnDash Group Enroll Core Class
  */
 class CK_LD_Group_Enroll_Core {
 
 	/**
-	 * Define template file.
+	 * Identifier Key.
 	 *
-	 * @var string $settings_key  Used by : Settings option & Nonce Checks & AJAX Handler.
+	 * @since 1.0.0
+	 * @var string $settings_key Used by : Settings option & Nonce Checks & AJAX Handler.
 	 */
 	private $settings_key = 'ckld_group_enroll_queue';
 
@@ -378,7 +378,7 @@ class CK_LD_Group_Enroll_Core {
 			$this->logger( __CLASS__, __FUNCTION__, $option_data );
 
 			// Run again if still processing.
-			if ( $option_data['status'] === 'processing' ) {
+			if ( 'processing' === $option_data['status'] ) {
 				$this->dispatch_async_task();
 			}
 
@@ -444,7 +444,7 @@ class CK_LD_Group_Enroll_Core {
 
 				$this->logger( __CLASS__, __FUNCTION__, $task_data );
 
-			} while ( $task_data['status'] === 'processing' );
+			} while ( 'processing' === $task_data['status'] );
 
 			// Update the option.
 			update_option( $this->settings_key, $task_data );
@@ -498,15 +498,15 @@ class CK_LD_Group_Enroll_Core {
 			$line  = $trace[0]['line'];
 			$log   = "\n\nFile = {$file}\n";
 			$log  .= "Class = {$class_name}\n";
-			$log  .= "Function = {$functio_name}\n";
+			$log  .= "Function = {$function_name}\n";
 			$log  .= "Line = {$line}\n";
-			$log  .= 'Time = ' . date( 'Y-m-d j:i:s' ) . "\n";
+			$log  .= 'Time = ' . gmdate( 'Y-m-d j:i:s' ) . "\n";
 			if ( is_array( $data ) || is_object( $data ) ) {
 				$log .= 'Data = ' . print_r( $data, true ) . "\n";
 			} elseif ( is_string( $data ) ) {
 				$log .= $data;
 			}
-			if ( CK_LD_GROUP_DEBUG_LOG == 'error_log:' ) {
+			if ( CK_LD_GROUP_DEBUG_LOG === 'error_log:' ) {
 				error_log( $log );
 			} elseif ( CK_LD_GROUP_DEBUG_LOG > '' ) {
 				file_put_contents( CK_LD_GROUP_DEBUG_LOG, $log, FILE_APPEND );
