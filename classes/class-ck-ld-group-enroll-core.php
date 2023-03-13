@@ -58,10 +58,6 @@
             10,
             3
         );
-
-        if( isset( $_GET['test'] ) ){
-            ckld_group_enroll()->enrole_wp_users_to_learndash_group( [941,942,943], 45 );
-        }
     
     }
 
@@ -244,6 +240,7 @@
 
                 // Catch Process Status and Dispatch Valid Task
                 if ( $value['status'] === 'processing' ) {
+                    $this->logger( __CLASS__, __FUNCTION__, 'Dispatching From Run...' );
                     // Remove the dispatch listeners
                     remove_action(
                         "update_option_{$this->settings_key}", 
