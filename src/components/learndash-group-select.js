@@ -3,10 +3,11 @@
  */
 import { __ } from '@wordpress/i18n';
 import { BaseControl } from '@wordpress/components';
-import { useEffect, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
-  * React dependencies
+  * React Select Dependencies
+  *
   * @link Git https://github.com/JedWatson/react-select
   * @link Doc https://react-select.com/home
 */
@@ -21,78 +22,60 @@ import useEffectWPFetch from '../hooks/use-effect-wp-fetch.js';
 /**
  * LearnDash Group Select Component
  */
-const LearnDashGroupSelect = ({ selected, onChange }) => {
+const LearnDashGroupSelect = ({ disabled, onChange }) => {
 
-    //console.log('LearnDashGroupSelect: Entering...');
+	const [inputValue, setValue] = useState('');
+	const [apiResponse, loading, error] = useEffectWPFetch(
+		`/ldlms/v1/groups?context=embed&per_page=-1`
+	);
 
-    // Prepare the initial state
-    const [ groupData, setGroupData ] = useState( [] );
-    const [ value, setValue ]         = useState( '' );
-    const [ status, setStatus ]       = useState( 'loading' );
-    // Fetch Group Data
-    const [ apiResponse, loading, error ] = useEffectWPFetch(
-        `/ldlms/v1/groups?context=embed&per_page=-1`
-    );
-        
-    useEffect(() => {
-        if( ! loading && apiResponse.length > 0 && status === 'loading'){
-            // Map the API response to the component
-            setGroupData( apiResponse.map( group => ( {
-                label : group.title.rendered,
-                value : group.id,
-            } ) ) );
-            setValue( selected ? mapSelectedToOptions(selected) : '' );
-            setStatus( 'ready' );
-        }
-    }, [ loading, status ]);
+	// handle input change event
+	const handleInputChange = value => {
+		setValue(value);
+	};
 
-    // Map the selected IDs to the options
-    const mapSelectedToOptions = (selected) => {
-        return selected.map(id => {
-            const user = apiResponse.find(group => group.id === id);
-            return {
-                value: group.title.rendered, 
-                label: user.email
-            };
-        });
-    };
+	// Loading Message
+	const loadingMessage = () => {
+		return __('Loading LearnDash Groups ...', 'ck-ld-group-enroll');
+	};
 
-    if( status === 'ready' ){
+	// No Options Message
+	const noOptionsMessage = () => {
+		if (error) {
+			return __(`Error: Loading LearnDash Groups`, 'ck-ld-group-enroll');
+		} else if (inputValue.length > 0) {
+			return sprintf(
+				__(`No LearnDash Groups found with name matching "%s"`, 'ck-ld-group-enroll'),
+				inputValue
+			);
+		} else {
+			return __(`No LearnDash Groups found`, 'ck-ld-group-enroll');
+		}
+	};
 
-        return (
-            <BaseControl 
-                className='ck-ld-group-enroll-control-wrap'
-                label={ __( 'Select LearnDash Group', 'ck-ld-group-enroll' ) }
-            >
-            <Select
-                key="ck-ld-group-enroll-group-select"
-                name="ck-ld-group-enroll-group-select"
-                value={ value }
-                options={ groupData }
-                onChange={ ( value ) => {
-                    setValue( value );
-                    onChange( value ? value.value : 0 );
-                } }
-                className='ck-ld-group-enroll-group-select'
-                isClearable={false}
-            />
-        </BaseControl>
-        );
-
-    } else {
-
-        const message = loading
-            ? __( 'Loading Groups...', 'ck-ld-group-enroll' ) 
-            : __( 'Error loading Grroups check console for details', 'ck-ld-group-enroll' );
-
-        return (
-            <BaseControl className='ck-ld-group-enroll-control-wrap'>
-                <p className="ck-ld-group-enroll-dummy-input">
-                    { message }
-                </p>
-            </BaseControl>
-        );
-    }
+	return (
+		<BaseControl
+			label={__('LearnDash Group', 'ck-ld-group-enroll')}
+			className='ck-ld-group-enroll-control-wrap'
+		>
+			<Select
+				className='ck-ld-group-enroll-group-select'
+				value={inputValue}
+				options={apiResponse}
+				onInputChange={handleInputChange}
+				onChange={(value) => {
+					setValue(value);
+					onChange(value ? value.id : 0);
+				}}
+				getOptionLabel={value => value.title.rendered}
+				getOptionValue={value => value.id}
+				isLoading={loading}
+				disabled={disabled}
+				loadingMessage={loadingMessage}
+				noOptionsMessage={noOptionsMessage}
+			/>
+		</BaseControl>
+	);
 }
 
 export default LearnDashGroupSelect;

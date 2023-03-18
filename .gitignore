@@ -2,3 +2,4 @@
 .svn
 node_modules
 /ckld_group_enroll_debug.log
+.vscode

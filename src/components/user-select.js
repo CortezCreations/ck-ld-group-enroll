@@ -2,114 +2,110 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { BaseControl, Spinner } from '@wordpress/components';
-import { useEffect, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
+import { BaseControl, Spinner } from '@wordpress/components'
+import apiFetch from '@wordpress/api-fetch';
 
 /**
-  * React dependencies
+  * React Select Dependencies
+  *
   * @link Git https://github.com/JedWatson/react-select
   * @link Doc https://react-select.com/home
-  * @link REVIEW import AsyncSelect from 'react-select/async'; to run a search on WP Users istead of tryig to load them all like a fool
 */
 import React from 'react';
-import Select from 'react-select';
+import AsyncSelect from 'react-select/async';
 
 /**
- * Internal dependencies
+ * WPUserSelect Component
+ *
+ * Searches User Rest Route for users matching the search term
+ * Sends the selected user IDs to the parent component
  */
-import useEffectWPFetch from '../hooks/use-effect-wp-fetch.js';
-//import './style.scss';
+const WPUserSelect = ({ disabled, onChange }) => {
 
-/**
- * WP User Multi Select Component
- * 
- * @param boolean disabled - Disable the component
- * @param array selected - User IDs - Gets convereted to emails from IDs
- * @param function onChange - Callback function to pass the selected IDs to the parent 
- */
-const WPUserSelect = ({ disabled, selected, onChange }) => {
+	const [inputValue, setValue] = useState('');
+	const [selectedValue, setSelectedValue] = useState(null);
 
-    //console.log('WPUserSelect: Entering...');
+	// handle input change event
+	const handleInputChange = value => {
+		setValue(value);
+	};
 
-    // Prepare the initial state
-    const [value, setValue] = useState( [] );
-    const [options, setOptions] = useState( [] );
-    // Fetch WP Users
-    const [apiResponse, loading, error] = useEffectWPFetch(
-       `/wp/v2/users/?per_page=-1&context=edit`
-    );
-    
-    // Filter the data to work with the component
-    useEffect(() => {
+	// handle selection
+	const handleChange = value => {
+		setSelectedValue(value);
+		//Pass the IDs to the parent
+		const ids = value.map(v => v.id);
+		onChange(ids);
+	}
 
-        // Bail if loading
-        if( loading || apiResponse.length === 0 ){
-            return;
-        }
-        // Map Options
-        setOptions( apiResponse.map(user => ({value: user.id, label: user.email})) );
+	// get search params as string
+	const getSearchParams = (inputValue) => {
+		let params = {
+			search: encodeURIComponent(inputValue),
+			orderby: 'email',
+			//roles: 'administrator,editor,author,contributor,subscriber',
+			per_page: -1,
+			context: 'edit',
+		};
+		return new URLSearchParams(params).toString();
+	};
 
-        if( selected && selected.length > 0 ){
-            setValue( mapSelectedToOptions(selected) );
-        }
+	// load options using API call
+	const loadOptions = (inputValue) => {
+		if (inputValue.length > 2) {
+			const searchParams = getSearchParams(inputValue);
+			return apiFetch({
+				path: `/wp/v2/users/?${searchParams}`,
+				method: 'GET'
+			});
+		} else {
+			return [];
+		}
+	};
 
-    }, [selected, loading]);
+	// Loading Message
+	const loadingMessage = () => {
+		if (inputValue.length > 2) {
+			return sprintf(
+				__(`Loading Users with emails matching "%s" ...`, 'ck-ld-group-enroll'),
+				inputValue
+			);
+		} else {
+			return __('Type at least 3 characters to start search', 'ck-ld-group-enroll');
+		}
+	};
 
-    // Display a loading || error message
-    if( loading || error ){
-        let message = error ? __('Error loading Users check console for details', 'ck-ld-group-enroll')
-                            : __('Loading Users...', 'ck-ld-group-enroll');
-        return (
-            <BaseControl className='ck-ld-group-enroll-control-wrap'>
-                <p className="ck-ld-group-enroll-dummy-input">
-                    { message }
-                    <Spinner />
-                </p>
-            </BaseControl>
-        );
-    }
+	// No Options Message
+	const noOptionsMessage = () => {
+		return sprintf(
+			__(`No Users found with emails matching "%s"`, 'ck-ld-group-enroll'),
+			inputValue
+		);
+	};
 
-    // Handle the change event 
-    const onChangeFilter = ( value ) => {
-        // Bail if disabled
-        if( loading ){
-            return;
-        }
-        
-        setValue( value );
-        //Pass the IDs to the parent
-        const ids = value.map(v => v.value);
-
-        onChange( ids );
-    };
-
-    // Map the selected IDs to the options
-    const mapSelectedToOptions = (selected) => {
-        return selected.map(id => {
-            const user = apiResponse.find(user => user.id === id);
-            return {value: user.id, label: user.email};
-        });
-    };
-
-    // Render the component
-    return (
-        <BaseControl 
-            className='ck-ld-group-enroll-control-wrap'
-            label={ __( 'Select Users To Enroll', 'ck-ld-group-enroll' ) }
-        >
-            <Select
-                key="ck-ld-group-enroll-user-select"
-                name="ck-ld-group-enroll-user-select"
-                value={ value }
-                onChange={ onChangeFilter }
-                options={ options }
-                className='ck-ld-group-enroll-user-select'
-                isMulti='true'
-                isClearable={false}
-                disabled={ disabled }
-            />
-        </BaseControl>
+	return (
+		<BaseControl
+			className='ck-ld-group-enroll-control-wrap'
+			label={__('Select Users To Enroll', 'ck-ld-group-enroll')}
+			help={__("Enter at least 3 characters of a user's email to start search.", 'ck-ld-group-enroll')}
+		>
+			<AsyncSelect
+				cacheOptions
+				defaultOptions
+				value={selectedValue}
+				getOptionLabel={e => e.email}
+				getOptionValue={e => e.id}
+				loadOptions={loadOptions}
+				onInputChange={handleInputChange}
+				onChange={handleChange}
+				isMulti={true}
+				disabled={disabled}
+				loadingMessage={loadingMessage}
+				noOptionsMessage={noOptionsMessage}
+			/>
+		</BaseControl>
 	);
-};
+}
 
 export default WPUserSelect;

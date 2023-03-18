@@ -1,64 +1,64 @@
 * {
 	box-sizing: inherit;
-  }
-  
+}
+
 .toplevel_page_ck-ld-group-enroll-admin #wpcontent {
-  padding-left: 0;
+	padding-left: 0;
 }
 
 .auto-fold #wpcontent {
-  padding-left: 0;
+	padding-left: 0;
 }
 
 #ck-ld-group-enroll-admin {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-}
-  
-.ck-ld-group-enroll-panel-bottom-button-row{
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 0px;
-  padding: 1em;
+	background: #fff;
+	border: 1px solid #e0e0e0;
 }
 
-.ck-ld-group-enroll-panel-bottom-help{
-  margin: auto;
-  margin-top: 0px;
-  padding: 1em;
+.ck-ld-group-enroll-panel-bottom-button-row {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 0px;
+	padding: 1em;
+}
+
+.ck-ld-group-enroll-panel-bottom-help {
+	margin: auto;
+	margin-top: 0px;
+	padding: 1em;
 }
 
 
-.ck-ld-placeholder{
-  border: none;
-  box-shadow: none;
+.ck-ld-placeholder {
+	border: none;
+	box-shadow: none;
 
-  .components-spinner{
-    margin: 0 auto;
-    width: 40px;
-    height: 40px;
-  }
+	.components-spinner {
+		margin: 0 auto;
+		width: 40px;
+		height: 40px;
+	}
 }
 
 /**
   * Loading View
   */
-.ck-ld-group-enroll-loading{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  padding: 8em;
-  flex-flow: column;
+.ck-ld-group-enroll-loading {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	padding: 8em;
+	flex-flow: column;
 
-  .ck-ld-group-enroll-loading-text{
-    margin-top: 1em;
-  }
+	.ck-ld-group-enroll-loading-text {
+		margin-top: 1em;
+	}
 
-  svg{
-    width: 50px;
-    height: 50px;
-  }
+	svg {
+		width: 50px;
+		height: 50px;
+	}
 }
 
 /**
@@ -67,30 +67,32 @@
 
 .ck-ld-group-enroll-results {
 
-  button {
-    margin: 1em;
-  }
+	button {
+		margin: 1em;
+	}
 
-  .ck-ld-group-enroll-results-message{
-    padding: 10px;
-  }
+	.ck-ld-group-enroll-results-message {
+		padding: 10px;
+	}
 
-  .ck-ld-group-enroll-profile-link{
-    margin-right: 0.5em;
-  }
-  .ck-ld-group-enroll-results-status-icon{
-    float:right;
+	.ck-ld-group-enroll-profile-link {
+		margin-right: 0.5em;
+	}
 
-    .dashicons{
-      &.dashicons-yes{
-        color: green;
-      }
-      &.dashicons-no{
-        color: red;
-      }
-    }
+	.ck-ld-group-enroll-results-status-icon {
+		float: right;
 
-  }
+		.dashicons {
+			&.dashicons-yes {
+				color: green;
+			}
+
+			&.dashicons-no {
+				color: red;
+			}
+		}
+
+	}
 
 }
 
@@ -98,28 +100,28 @@
   * Common Layout
   */
 
-.ck-ld-group-enroll-control-wrap{
-  margin: 1em;
+.ck-ld-group-enroll-control-wrap {
+	margin: 1em;
 }
 
-.ck-ld-group-enroll-mobile-full-width{
-  align-items: start;
-  }
-
-@media screen and (max-width: 599px){
-  .ck-ld-group-enroll-mobile-full-width{
-    display: flow-root;
-  }
+.ck-ld-group-enroll-mobile-full-width {
+	align-items: start;
 }
 
-@media screen and (min-width: 600px){
-  .ck-ld-group-enroll-control-wrap{
-    width: 100%;
-  }
+@media screen and (max-width: 599px) {
+	.ck-ld-group-enroll-mobile-full-width {
+		display: flow-root;
+	}
 }
-  
-@media screen and (min-width: 783px){
-  #ck-ld-group-enroll-admin{
-    margin: 16px;
+
+@media screen and (min-width: 600px) {
+	.ck-ld-group-enroll-control-wrap {
+		width: 100%;
+	}
+}
+
+@media screen and (min-width: 783px) {
+	#ck-ld-group-enroll-admin {
+		margin: 16px;
 	}
 }

@@ -9,28 +9,28 @@
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
-const useEffectWPFetch = ( url ) => {
-    
-    const [apiResponse, setAPIResponse] = useState([]);
-    const [loading, setLoading]      = useState(true);
-    const [error, setError]          = useState(false);
+const useEffectWPFetch = (url) => {
 
-    useEffect(() => {
-        apiFetch( {
-            path   : url,
-            method : 'GET',
-        } ).then( ( apiResponse ) => {
-            setAPIResponse( apiResponse );
-            setLoading(false);
-            //console.log( "useEffectWPFetch result: ", apiResponse );
-        } ).catch( ( error ) => {
-            console.log( "useEffectWPFetch error: ", error );
-            setError( error );
-            setLoading(false);
-        } );
-    }, []);
+	const [apiResponse, setAPIResponse] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(false);
 
-    return [apiResponse, loading, error];
+	useEffect(() => {
+		apiFetch({
+			path: url,
+			method: 'GET',
+		}).then((apiResponse) => {
+			setAPIResponse(apiResponse);
+			setLoading(false);
+			//console.log( "useEffectWPFetch result: ", apiResponse );
+		}).catch((error) => {
+			console.log("useEffectWPFetch error: ", error);
+			setError(error);
+			setLoading(false);
+		});
+	}, []);
+
+	return [apiResponse, loading, error];
 };
 
 export default useEffectWPFetch;

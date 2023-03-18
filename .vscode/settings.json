@@ -1,5 +1,8 @@
 {
 	"editor.insertSpaces": false,
 	"editor.renderWhitespace": "none",
-	"editor.largeFileOptimizations": false
+	"editor.largeFileOptimizations": false,
+	"intelephense.environment.includePaths": [
+		"/Users/curtiskrauter/Local Sites/newbie/app/public/wp-content/plugins"
+	]
 }
